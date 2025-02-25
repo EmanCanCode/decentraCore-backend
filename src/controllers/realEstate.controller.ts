@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import mongo from '../config/mongo';
+import blockchain from '../services/blockchain.service';
+import { BigNumber } from 'ethers';
 
 // GET /api/realestate/:buyer -> returns escrowId or null
 export async function getEscrowIdController(req: Request, res: Response) {
@@ -27,6 +29,54 @@ export async function deleteRealEstateDocController(req: Request, res: Response)
     res.status(200).json({ message: 'RealEstate document deleted successfully' });
   } catch (error) {
     console.error('Error deleting RealEstate document:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+
+// POST /api/realestate/create-signatures
+export async function createEscrowSignaturesController(req: Request, res: Response) {
+  try {
+    // Expect buyer, seller, nftId, purchasePrice in request body
+    const { buyer, seller, nftId, purchasePrice } = req.body;
+    if (!buyer || !seller || nftId === undefined || !purchasePrice) {
+      res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // purchasePrice is presumably a string in JSON, so parse it into BigNumber
+    const purchasePriceBN = BigNumber.from(purchasePrice);
+
+    // call your service
+    const { sellerSignature, lenderSignature } = await blockchain.createEscrowFactorySignatures(
+      buyer,
+      seller,
+      nftId,
+      purchasePriceBN
+    );
+
+    res.status(200).json({ sellerSignature, lenderSignature });
+  } catch (error) {
+    console.error('Error creating escrow signatures:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+// POST /api/realestate/complete-escrow
+export async function completeEscrowController(req: Request, res: Response) {
+  try {
+    const { escrowAddress } = req.body;
+    if (!escrowAddress) {
+      res.status(400).json({ message: 'Missing escrowAddress' });
+    }
+
+    const success = await blockchain.completeEscrow(escrowAddress);
+    if (success) {
+      res.status(200).json({ message: 'Escrow completed successfully' });
+    } else {
+      res.status(500).json({ message: 'Failed to complete escrow' });
+    }
+  } catch (error) {
+    console.error('Error completing escrow:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }

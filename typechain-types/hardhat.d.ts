@@ -13,10 +13,6 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "Ownable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Ownable__factory>;
-    getContractFactory(
       name: "ERC1155",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1155__factory>;
@@ -53,10 +49,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
-      name: "SafeCast",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SafeCast__factory>;
-    getContractFactory(
       name: "ConstantProduct",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ConstantProduct__factory>;
@@ -80,6 +72,14 @@ declare module "hardhat/types/runtime" {
       name: "EscrowFactory",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EscrowFactory__factory>;
+    getContractFactory(
+      name: "Finance",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Finance__factory>;
+    getContractFactory(
+      name: "IERC1155",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1155__factory>;
     getContractFactory(
       name: "RealEstate",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -109,11 +109,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Provenance__factory>;
 
-    getContractAt(
-      name: "Ownable",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Ownable>;
     getContractAt(
       name: "ERC1155",
       address: string,
@@ -160,11 +155,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
     getContractAt(
-      name: "SafeCast",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SafeCast>;
-    getContractAt(
       name: "ConstantProduct",
       address: string,
       signer?: ethers.Signer
@@ -194,6 +184,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.EscrowFactory>;
+    getContractAt(
+      name: "Finance",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Finance>;
+    getContractAt(
+      name: "IERC1155",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1155>;
     getContractAt(
       name: "RealEstate",
       address: string,

@@ -68,6 +68,7 @@ export declare namespace EscrowFactory {
 
 export interface EscrowFactoryInterface extends utils.Interface {
   functions: {
+    "_computeEscrowId((address,uint256,uint8,uint256,uint256,address,address,address,address,address),uint256)": FunctionFragment;
     "createEscrowFromVerified((address,uint256,uint8,uint256,uint256,address,address,address,address,address),bytes32)": FunctionFragment;
     "escrows(bytes32)": FunctionFragment;
     "nonce(address,address)": FunctionFragment;
@@ -79,6 +80,7 @@ export interface EscrowFactoryInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "_computeEscrowId"
       | "createEscrowFromVerified"
       | "escrows"
       | "nonce"
@@ -88,6 +90,10 @@ export interface EscrowFactoryInterface extends utils.Interface {
       | "withdraw"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "_computeEscrowId",
+    values: [EscrowFactory.EscrowParamsStruct, PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "createEscrowFromVerified",
     values: [EscrowFactory.EscrowParamsStruct, PromiseOrValue<BytesLike>]
@@ -116,6 +122,10 @@ export interface EscrowFactoryInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "_computeEscrowId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "createEscrowFromVerified",
     data: BytesLike
@@ -196,6 +206,12 @@ export interface EscrowFactory extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    _computeEscrowId(
+      _params: EscrowFactory.EscrowParamsStruct,
+      _currentNonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     createEscrowFromVerified(
       _params: EscrowFactory.EscrowParamsStruct,
       _escrowId: PromiseOrValue<BytesLike>,
@@ -232,6 +248,12 @@ export interface EscrowFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  _computeEscrowId(
+    _params: EscrowFactory.EscrowParamsStruct,
+    _currentNonce: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   createEscrowFromVerified(
     _params: EscrowFactory.EscrowParamsStruct,
@@ -270,6 +292,12 @@ export interface EscrowFactory extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    _computeEscrowId(
+      _params: EscrowFactory.EscrowParamsStruct,
+      _currentNonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     createEscrowFromVerified(
       _params: EscrowFactory.EscrowParamsStruct,
       _escrowId: PromiseOrValue<BytesLike>,
@@ -336,6 +364,12 @@ export interface EscrowFactory extends BaseContract {
   };
 
   estimateGas: {
+    _computeEscrowId(
+      _params: EscrowFactory.EscrowParamsStruct,
+      _currentNonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     createEscrowFromVerified(
       _params: EscrowFactory.EscrowParamsStruct,
       _escrowId: PromiseOrValue<BytesLike>,
@@ -374,6 +408,12 @@ export interface EscrowFactory extends BaseContract {
   };
 
   populateTransaction: {
+    _computeEscrowId(
+      _params: EscrowFactory.EscrowParamsStruct,
+      _currentNonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     createEscrowFromVerified(
       _params: EscrowFactory.EscrowParamsStruct,
       _escrowId: PromiseOrValue<BytesLike>,

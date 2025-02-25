@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getEscrowIdController, deleteRealEstateDocController } from '../controllers/realEstate.controller';
+import { getEscrowIdController, deleteRealEstateDocController, createEscrowSignaturesController, completeEscrowController } from '../controllers/realEstate.controller';
 
 const router = Router();
 
@@ -8,5 +8,11 @@ router.get('/:buyer', getEscrowIdController);
 
 // DELETE /api/realestate/:buyer -> deletes doc
 router.delete('/:buyer', deleteRealEstateDocController);
+
+// POST /api/realestate/create-signatures
+router.post('/create-signatures', createEscrowSignaturesController);
+
+// POST /api/realestate/complete-escrow
+router.post('/complete-escrow', completeEscrowController);
 
 export default router;

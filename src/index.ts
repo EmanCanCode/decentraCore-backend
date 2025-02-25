@@ -3,9 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongo from './config/mongo';  // Import the single instance
-import financeRoutes from './routes/finance.routes'; // Example route
+import financeRoutes from './routes/finance.routes'; 
 import supplyChainRoutes from './routes/supplyChain.routes';
 import realEstateRoutes from './routes/realEstate.routes';
+import blockchainRoutes from './routes/blockchain.routes';
 
 dotenv.config();
 
@@ -32,6 +33,9 @@ app.use(express.json());
 
     // Real Estate endpoints -> GET /api/realestate/:address, DELETE ...
     app.use('/api/realestate', realEstateRoutes);
+
+    // Blockchain endpoints -> GET or POST /api/blockchain/faucet
+    app.use('/api/blockchain', blockchainRoutes);
 
     // Start server
     const PORT = process.env.PORT || 3000;
