@@ -229,7 +229,7 @@ export class Blockchain {
         );
     }
 
-    // what i used to test 👆🏾. i ran npx hardhat node and deployed and listened to the contracts in blockchain part of DecentraCore
+    // what i used to test 👇🏿. i ran npx hardhat node and deployed and listened to the contracts in blockchain part of DecentraCore
     // async testRealEstateFns() {
     //     const wait = async (seconds: number) => {
     //         return new Promise((resolve) => {

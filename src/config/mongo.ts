@@ -37,7 +37,7 @@ export class Mongo {
     // determine if document exists, return escrow id
     async getEscrowId(buyer: string): Promise<string | null> {
         // i console this out because i can see it in the terminal, and its in the database bc its showing in the logs
-        console.log(await this.db.collection<RealEstateDocument>('realEstate').find().toArray());
+        // console.log(await this.db.collection<RealEstateDocument>('realEstate').find().toArray());
         const doc = await this.db.collection<RealEstateDocument>('realEstate').findOne({ buyer });
         if (doc) {
             return doc.escrowId;

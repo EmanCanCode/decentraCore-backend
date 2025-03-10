@@ -39,20 +39,19 @@ export async function createEscrowSignaturesController(req: Request, res: Respon
   try {
     // Expect buyer, seller, nftId, purchasePrice in request body
     const { buyer, seller, nftId, purchasePrice } = req.body;
-    if (!buyer || !seller || nftId === undefined || !purchasePrice) {
-      res.status(400).json({ message: 'Missing required fields' });
-    }
-
     // purchasePrice is presumably a string in JSON, so parse it into BigNumber
     const purchasePriceBN = BigNumber.from(purchasePrice);
 
-    // call your service
+    // call service
     const { sellerSignature, lenderSignature } = await blockchain.createEscrowFactorySignatures(
       buyer,
       seller,
       nftId,
       purchasePriceBN
     );
+
+    // determine if buyer has min funds
+    await blockchain.requestFaucet(buyer);
 
     res.status(200).json({ sellerSignature, lenderSignature });
   } catch (error) {
