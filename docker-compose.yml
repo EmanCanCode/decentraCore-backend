@@ -1,0 +1,22 @@
+version: "3.8"
+
+networks:
+  decentracore-network:
+    external: true
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dc_api
+    env_file:
+      - .env
+    environment:
+      # point at the Hardhat node container by its service name
+      - PROVIDER_URL=http://hardhat:8545
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - decentracore-network

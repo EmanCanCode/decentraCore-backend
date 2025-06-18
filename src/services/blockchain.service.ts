@@ -1,8 +1,11 @@
-import { ethers } from 'hardhat';
+// import { ethers } from 'hardhat';
+import { ethers } from 'ethers';
 import { JsonRpcProvider, TransactionResponse } from '@ethersproject/providers';
 import { BigNumber, Wallet } from 'ethers';
 import * as chainConfig from './config.json';
 import dotenv from 'dotenv';
+import { Escrow__factory, EscrowFactory__factory, Finance__factory, FungibleToken__factory } from '../../typechain-types';
+import mongo from '../config/mongo';
 dotenv.config();
 
 
@@ -70,7 +73,8 @@ export class Blockchain {
     
             const minimumTokenAmount = ethers.utils.parseEther('1000000'); // 1 million tokens
             // create token contract instance 1
-            let tokenContract = await ethers.getContractAt("FungibleToken", chainConfig.finance['Eman Token 1'], this.deployer);
+            // let tokenContract = await ethers.getContractAt("FungibleToken", chainConfig.finance['Eman Token 1'], this.deployer);
+            let tokenContract = FungibleToken__factory.connect(chainConfig.finance['Eman Token 1'], this.deployer);
             // get requester balance
             requesterBalance = await tokenContract.balanceOf(address);
             if (requesterBalance.lt(minimumTokenAmount)) {
@@ -82,7 +86,8 @@ export class Blockchain {
             }
     
             // create token contract instance 2
-            tokenContract = await ethers.getContractAt("FungibleToken", chainConfig.finance['Eman Token 2'], this.deployer);
+            // tokenContract = await ethers.getContractAt("FungibleToken", chainConfig.finance['Eman Token 2'], this.deployer);
+            tokenContract = FungibleToken__factory.connect(chainConfig.finance['Eman Token 2'], this.deployer);
             // get requester balance
             requesterBalance = await tokenContract.balanceOf(address);
             if (requesterBalance.lt(minimumTokenAmount)) {
@@ -113,12 +118,12 @@ export class Blockchain {
         }
         try {
             // create escrow factory instance
-            const escrowFactory = await ethers.getContractAt(
-                "EscrowFactory", 
-                chainConfig.realEstate['escrowFactoryAddress'], 
-                this.deployer
-            );
-
+            // const escrowFactory = await ethers.getContractAt(
+            //     "EscrowFactory", 
+            //     chainConfig.realEstate['escrowFactoryAddress'], 
+            //     this.deployer
+            // );
+            const escrowFactory = EscrowFactory__factory.connect(chainConfig.realEstate['escrowFactoryAddress'], this.deployer);
             // get nonce
             const nonce = await escrowFactory.nonce(buyer, seller);
 
@@ -172,7 +177,8 @@ export class Blockchain {
         escrowAddress: string, // escrow address
     ) {
         // get escrow instance
-        const escrow = await ethers.getContractAt("Escrow", escrowAddress, this.deployer);
+        // const escrow = await ethers.getContractAt("Escrow", escrowAddress, this.deployer);
+        const escrow = Escrow__factory.connect(escrowAddress, this.deployer);
         // ensure that buyer had deposited earnest amount, essentially the first approval in the escrow
         const buyerDeposit = await escrow.deposit_balance(await escrow.buyer());
         if (buyerDeposit.eq(0)) {
@@ -187,19 +193,23 @@ export class Blockchain {
         // have seller, inspector, lender and appraiser call approveSale()
         const sellerAddress = await escrow.seller();
         const seller = this.seeders.find(seeder => seeder.address === sellerAddress)!;
-        await escrow.connect(seller).approveSale();
+        let tx = await escrow.connect(seller).approveSale();
+        await tx.wait();
         // inspector, lender and appraiser are the same
-        await escrow.connect(this.escrowManager).approveSale();
+        tx = await escrow.connect(this.escrowManager).approveSale();
+        await tx.wait();
         // activate sale
-        await escrow.connect(this.escrowManager).activateSale();
+        tx = await escrow.connect(this.escrowManager).activateSale();
+        await tx.wait();
         // have lender deposit loan
         const loanAmount = await (async () => {
             const purchasePrice = await escrow.purchase_price();
             return purchasePrice.sub(buyerDeposit);
         })();
-        await escrow.connect(this.escrowManager).deposit({ value: loanAmount });
+        tx = await escrow.connect(this.escrowManager).deposit({ value: loanAmount });
+        await tx.wait();
         // finalize sale
-        const tx = await escrow.connect(this.escrowManager).finalizeSale();
+        tx = await escrow.connect(this.escrowManager).finalizeSale();
         await tx.wait();
 
         // add id in finance contract
@@ -207,6 +217,17 @@ export class Blockchain {
             await escrow.buyer(),
             (await escrow.nft_id()).toNumber()
         );
+
+        let deletedDoc = true;
+        await mongo.deleteRealEstateDoc(await escrow.buyer()).catch(err => {
+            console.error(err);
+            deletedDoc = false;
+        });
+
+        if (!deletedDoc) {
+            console.log('Failed to delete document');
+            // throw new Error('Failed to delete document');
+        }
 
         return true;
     }
@@ -217,182 +238,19 @@ export class Blockchain {
         id: number, // nft id
     ) {
         // create real estate finance contract instance
-        const finance = await ethers.getContractAt(
-            'Finance',
-            chainConfig.realEstate['finance'],
-            this.deployer
-        );
+        // const finance = await ethers.getContractAt(
+        //     'Finance',
+        //     chainConfig.realEstate['finance'],
+        //     this.deployer
+        // );
+        const finance = Finance__factory.connect(chainConfig.realEstate['finance'], this.deployer);
         // add id as owner (deployer)
-        await finance.connect(this.deployer).setIdInFinance(
+        const tx = await finance.connect(this.deployer).setIdInFinance(
             buyer,
             id
         );
+        await tx.wait();
     }
-
-    // what i used to test 👇🏿. i ran npx hardhat node and deployed and listened to the contracts in blockchain part of DecentraCore
-    // async testRealEstateFns() {
-    //     const wait = async (seconds: number) => {
-    //         return new Promise((resolve) => {
-    //             console.log("Waiting for " + seconds + " seconds...");
-    //             setTimeout(resolve, seconds * 1000);
-    //         });
-    //     }
-
-
-
-    //     // create buyer
-    //     const buyer = new Wallet('0x45cfa5545a6859f2bd532e09ad58f11c98953361e935621d02f88570d13aa0aa', this.provider);
-    //     // send buyer some ether
-    //     await this.requestFaucet(buyer.address); // sneaky way to get some ether
-    //     // lets create the parameters
-    //     const params = {
-    //         nft_address: chainConfig.realEstate['realEstateAddress'],
-    //         nft_id: 1, // seeder 1 owns this nft
-    //         nft_count: 1,
-    //         purchase_price: ethers.utils.parseEther('2'), // 2 ether
-    //         earnest_amount: ethers.utils.parseEther('0.02'), // 0.02 ether (1% of purchase price)
-    //         seller: this.seeders[0].address,
-    //         buyer: buyer.address,
-    //         inspector: this.escrowManager.address,
-    //         lender: this.escrowManager.address,
-    //         appraiser: this.escrowManager.address
-    //     }
-    //     // have buyer sign the message (nonce will be 1)
-    //     const nonce = 1;
-    //     let messageDigest = ethers.utils.solidityPack(
-    //         [
-    //             'address', // nft address
-    //             'uint256', // nft id
-    //             'uint8', // nft count
-    //             'uint256', // purchase price
-    //             'uint256', // earnest amount
-    //             'address', // seller
-    //             'address', // buyer
-    //             'address', // inspector
-    //             'address', // lender
-    //             'address', // appraiser
-    //             'uint256' // nonce
-    //         ],
-    //         [
-    //             params.nft_address, // nft address
-    //             params.nft_id, // nft id
-    //             params.nft_count, // nft count
-    //             params.purchase_price, // purchase price
-    //             params.earnest_amount, // earnest amount
-    //             params.seller, // seller
-    //             params.buyer, // buyer
-    //             params.inspector, // inspector
-    //             params.lender, // lender
-    //             params.appraiser, // appraiser
-    //             nonce // nonce
-    //         ]
-    //     );
-    //     messageDigest = ethers.utils.solidityKeccak256(['bytes'], [messageDigest]);
-    //     const buyerSignature = await buyer.signMessage(
-    //         ethers.utils.arrayify(messageDigest)
-    //     );
-    //     // TEST get seller and lender signatures
-    //     const { 
-    //         sellerSignature, 
-    //         lenderSignature 
-    //     } = await this.createEscrowFactorySignatures(
-    //         params.buyer,
-    //         params.seller,
-    //         params.nft_id,
-    //         params.purchase_price
-    //     );
-    //     // create escrow factory instance
-    //     const escrowFactory = await ethers.getContractAt(
-    //         "EscrowFactory",
-    //         chainConfig.realEstate['escrowFactoryAddress'],
-    //         this.deployer
-    //     );
-
-    //     // have lending manager verify escrow data (doesnt matter who does it)
-    //     let tx = await escrowFactory.connect(this.escrowManager).verifyEscrowData(
-    //         params,
-    //         sellerSignature,
-    //         buyerSignature,
-    //         lenderSignature
-    //     );
-    //     // wait for transaction to be mined
-    //     let receipt = await tx.wait();
-    //     // log if it was successful
-    //     console.table({
-    //         "Escrow data verified": receipt.status === 1,
-    //     });
-    //     // create escrow id
-    //     const escrowId = await escrowFactory._computeEscrowId(
-    //         params,
-    //         1
-    //     );
-    //     // create escrow from verified data (buyer on front end will call but doesnt matter who does it)
-    //     tx = await escrowFactory.connect(buyer).createEscrowFromVerified(
-    //         params,
-    //         escrowId
-    //     );
-    //     // wait for transaction to be mined
-    //     receipt = await tx.wait();
-    //     // log if it was successful
-    //     console.table({
-    //         "Escrow created from verified": receipt.status === 1,
-    //     });
-    //     // wait 2 seconds, the listener should add finance contract to the newly created escrow
-    //     await wait(2);
-    //     const escrowContract = await ethers.getContractAt(
-    //         'Escrow',
-    //         await escrowFactory.escrows(escrowId),
-    //         this.deployer
-    //     );
-    //     // see if the listener added the finance contract to the escrow
-    //     console.table({
-    //         "Finance contract set": (await escrowContract.finance_contract()).toLowerCase() == chainConfig.realEstate['finance'].toLowerCase(),
-    //     });
-    //     // buyer deposits earnest amount
-    //     tx = await escrowContract.connect(buyer).depositEarnest({ value: params.earnest_amount });
-    //     receipt = await tx.wait();
-    //     // log if it was successful
-    //     console.table({
-    //         "Buyer deposited earnest": receipt.status === 1,
-    //     });
-    //     // TEST finalize escrow 
-    //     await this.completeEscrow(escrowContract.address);
-    //     // see if the finance contract owns the nft now
-    //     const realEstate = await ethers.getContractAt( // erc1155 contract
-    //         'RealEstate',
-    //         chainConfig.realEstate['realEstateAddress'],
-    //         this.deployer
-    //     );
-
-    //     console.table({
-    //         "Finance contract owns nft": (await realEstate.balanceOf(chainConfig.realEstate['finance'], params.nft_id)).eq(1),
-    //     });
-
-    //     const finance = await ethers.getContractAt(
-    //         'Finance',
-    //         chainConfig.realEstate['finance'],
-    //         this.deployer
-    //     );
-
-    //     console.table({
-    //         "Buyers nft id set in finance": (await finance.idInFinance(buyer.address)).eq(params.nft_id),
-    //     });
-    //     // buyer can now claim the nft
-    //     tx = await finance.connect(buyer).payOff(
-    //         buyer.address,
-    //         params.nft_id
-    //     );
-    //     receipt = await tx.wait();
-    //     console.table({
-    //         "Buyer owns nft": (await realEstate.balanceOf(buyer.address, params.nft_id)).eq(1),
-    //     });
-
-    //     console.table({
-    //         'escrow state completed': await escrowContract.state() == 2
-    //     });
-
-    //     console.log("----- TEST COMPLETE -----")
-    // }
 }
 
 

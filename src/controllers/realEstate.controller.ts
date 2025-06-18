@@ -6,14 +6,16 @@ import { BigNumber } from 'ethers';
 // GET /api/realestate/:buyer -> returns escrowId or null
 export async function getEscrowIdController(req: Request, res: Response) {
   try {
+    console.log('Attempting to get escrowId for buyer');
     const { buyer } = req.params;
     const escrowId = await mongo.getEscrowId(buyer);
     // If not found, escrowId will be null
     if (!escrowId) {
-        res.status(404).json({ message: 'EscrowId not found' });
-        return;
-    } 
-
+      console.log('EscrowId not found for buyer', buyer ?? buyer);
+      res.status(404).json({ message: 'EscrowId not found' });
+      return;
+    }
+    console.log('EscrowId found:', escrowId);
     res.status(200).json({ escrowId });
   } catch (error) {
     console.error('Error fetching escrowId:', error);
@@ -49,9 +51,6 @@ export async function createEscrowSignaturesController(req: Request, res: Respon
       nftId,
       purchasePriceBN
     );
-
-    // determine if buyer has min funds
-    await blockchain.requestFaucet(buyer);
 
     res.status(200).json({ sellerSignature, lenderSignature });
   } catch (error) {

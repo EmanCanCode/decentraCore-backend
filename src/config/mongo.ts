@@ -1,5 +1,5 @@
-import { MongoClient, Db } from 'mongodb';
-import { FinanceDocument, RealEstateDocument } from '../interfaces/interfaces';
+import { MongoClient, Db, WithId } from 'mongodb';
+import { FinanceDocument, RealEstateDocument, SubscribeDocument } from '../interfaces/interfaces';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,8 +15,6 @@ export class Mongo {
         this.client = new MongoClient(process.env.MONGO_URI);
         this.db = this.client.db('DecentraCore');
     }
-
-
 
     async connect() {
         await this.client.connect();
@@ -50,7 +48,7 @@ export class Mongo {
         const deletedDoc = await this.db.collection<RealEstateDocument>('realEstate').deleteOne({ buyer });
         if (deletedDoc.deletedCount === 0) {
             throw new Error('Document not found');
-        } 
+        }
     }
 
     // supply chain
@@ -58,9 +56,57 @@ export class Mongo {
     async getSupplyChainDocs() {
         return this.db.collection('supplyChain').find().toArray();
     }
+
+    encodeEmail(email: string): string {
+        return email.replace(/\./g, '%2E');
+    }
+
+    decodeEmail(encoded: string): string {
+        return encoded.replace(/%2E/g, '.');
+    }
+
+    async addEmailSubscribe(email: string): Promise<void> {
+        const encodedEmail = this.encodeEmail(email);
+        const collection = this.db.collection<SubscribeDocument>('subscriptions');
+        const document = await collection.findOne({ emanCanCode: true });
+
+        if (!document) {
+            console.error("No subscription document found.");
+            return;
+        }
+
+        if (document[encodedEmail]) {
+            console.log(`Email: ${email} is already subscribed`);
+            return;
+        }
+
+        console.log(`Adding email: ${email}`);
+
+        try {
+            await collection.updateOne(
+                { emanCanCode: true },
+                { $set: { [encodedEmail]: true } }
+            );
+        } catch (error) {
+            console.error(`Error adding email: ${error}`);
+        }
+    }
+    
+
+    async getAllDocuments(): Promise<{ [collection: string]: WithId<Document>[][] }> {
+        const collections = await this.db.collections();
+        const allDocs: { [collection: string]: any[] } = {};
+    
+        for (const collection of collections) {
+            const docs = await collection.find().toArray();
+            allDocs[collection.collectionName] = docs;
+        }
+    
+        return allDocs;
+    }    
+
 }
 
-// Still in src/db/mongo.ts
 const mongo = new Mongo();
 
 export default mongo;

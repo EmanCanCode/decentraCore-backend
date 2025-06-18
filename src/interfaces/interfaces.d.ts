@@ -40,3 +40,9 @@ export interface RealEstateDocument {
     buyer: string; // address of the buyer
     escrowId: string; // id of the escrow
 }
+
+export interface SubscribeDocument {
+    _id : ObjectId;
+    emanCanCode: true; // this is just here for no reason... it will always be true... forever...
+    [email: string]: boolean; // this is for instant lookup, order doesnt matter
+}
