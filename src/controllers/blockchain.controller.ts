@@ -7,11 +7,13 @@ export async function requestFaucetController(req: Request, res: Response) {
     const { address } = req.query;  
     if (!address || typeof address !== 'string') {
       res.status(400).json({ message: 'Missing or invalid address param' });
+      return;
     }
 
     const success = await blockchain.requestFaucet(address as string);
     if (!success) {
       res.status(500).json({ message: 'Faucet request failed' });
+      return;
     }
 
     res.status(200).json({ message: 'Faucet request succeeded' });
