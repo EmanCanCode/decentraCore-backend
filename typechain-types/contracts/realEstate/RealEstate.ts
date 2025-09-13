@@ -293,7 +293,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -302,7 +302,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -372,7 +372,7 @@ export interface RealEstate extends BaseContract {
     from: PromiseOrValue<string>,
     to: PromiseOrValue<string>,
     ids: PromiseOrValue<BigNumberish>[],
-    amounts: PromiseOrValue<BigNumberish>[],
+    values: PromiseOrValue<BigNumberish>[],
     data: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -381,7 +381,7 @@ export interface RealEstate extends BaseContract {
     from: PromiseOrValue<string>,
     to: PromiseOrValue<string>,
     id: PromiseOrValue<BigNumberish>,
-    amount: PromiseOrValue<BigNumberish>,
+    value: PromiseOrValue<BigNumberish>,
     data: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -451,7 +451,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -460,7 +460,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -580,7 +580,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -589,7 +589,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -660,7 +660,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       ids: PromiseOrValue<BigNumberish>[],
-      amounts: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -669,7 +669,7 @@ export interface RealEstate extends BaseContract {
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

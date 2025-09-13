@@ -33,8 +33,6 @@ export interface FungibleTokenInterface extends utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "decimals()": FunctionFragment;
-    "decreaseAllowance(address,uint256)": FunctionFragment;
-    "increaseAllowance(address,uint256)": FunctionFragment;
     "mint(address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
@@ -50,8 +48,6 @@ export interface FungibleTokenInterface extends utils.Interface {
       | "approve"
       | "balanceOf"
       | "decimals"
-      | "decreaseAllowance"
-      | "increaseAllowance"
       | "mint"
       | "name"
       | "owner"
@@ -74,14 +70,6 @@ export interface FungibleTokenInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "decreaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "increaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
   encodeFunctionData(
     functionFragment: "mint",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -110,14 +98,6 @@ export interface FungibleTokenInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "decreaseAllowance",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "increaseAllowance",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -200,7 +180,7 @@ export interface FungibleToken extends BaseContract {
 
     approve(
       spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -210,18 +190,6 @@ export interface FungibleToken extends BaseContract {
     ): Promise<[BigNumber]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     mint(
       _to: PromiseOrValue<string>,
@@ -239,14 +207,14 @@ export interface FungibleToken extends BaseContract {
 
     transfer(
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     transferFrom(
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -259,7 +227,7 @@ export interface FungibleToken extends BaseContract {
 
   approve(
     spender: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
+    value: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -269,18 +237,6 @@ export interface FungibleToken extends BaseContract {
   ): Promise<BigNumber>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
-
-  decreaseAllowance(
-    spender: PromiseOrValue<string>,
-    subtractedValue: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  increaseAllowance(
-    spender: PromiseOrValue<string>,
-    addedValue: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   mint(
     _to: PromiseOrValue<string>,
@@ -298,14 +254,14 @@ export interface FungibleToken extends BaseContract {
 
   transfer(
     to: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
+    value: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   transferFrom(
     from: PromiseOrValue<string>,
     to: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
+    value: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -318,7 +274,7 @@ export interface FungibleToken extends BaseContract {
 
     approve(
       spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -328,18 +284,6 @@ export interface FungibleToken extends BaseContract {
     ): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     mint(
       _to: PromiseOrValue<string>,
@@ -357,14 +301,14 @@ export interface FungibleToken extends BaseContract {
 
     transfer(
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
     transferFrom(
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
   };
@@ -402,7 +346,7 @@ export interface FungibleToken extends BaseContract {
 
     approve(
       spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -412,18 +356,6 @@ export interface FungibleToken extends BaseContract {
     ): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     mint(
       _to: PromiseOrValue<string>,
@@ -441,14 +373,14 @@ export interface FungibleToken extends BaseContract {
 
     transfer(
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     transferFrom(
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -462,7 +394,7 @@ export interface FungibleToken extends BaseContract {
 
     approve(
       spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -472,18 +404,6 @@ export interface FungibleToken extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedValue: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
 
     mint(
       _to: PromiseOrValue<string>,
@@ -501,14 +421,14 @@ export interface FungibleToken extends BaseContract {
 
     transfer(
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     transferFrom(
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
