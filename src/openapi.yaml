@@ -1,0 +1,322 @@
+openapi: 3.0.3
+info:
+  title: DecentraCore API
+  version: 1.0.0
+  description: REST API for DecentraCore (Finance, Supply Chain, Real Estate, Utilities).
+servers:
+- url: http://localhost:3000
+  description: Local
+- url: https://api.emancancode.online
+  description: Production
+paths:
+  /:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/finance:
+    get:
+      summary: Get finance aggregates (CPAMM, CSAMM, OBMM)
+      responses:
+        '200':
+          description: List of finance docs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FinanceDocument'
+  /api/supplyChain:
+    get:
+      summary: Get supply chain aggregates (Provenance, InventoryManagement)
+      responses:
+        '200':
+          description: List of supply chain docs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                  - $ref: '#/components/schemas/SupplyChainProvenance'
+                  - $ref: '#/components/schemas/SupplyChainInventory'
+  /api/realEstate/{buyer}:
+    get:
+      summary: Get escrowId for buyer
+      parameters:
+      - in: path
+        name: buyer
+        required: true
+        schema:
+          $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: EscrowId found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  escrowId:
+                    type: string
+        '404':
+          description: Not found
+    delete:
+      summary: Delete RealEstate doc for buyer
+      parameters:
+      - in: path
+        name: buyer
+        required: true
+        schema:
+          $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: Deleted or no-op
+  /api/realEstate/create-signatures:
+    post:
+      summary: Create escrow signatures (verify step)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSignaturesRequest'
+      responses:
+        '200':
+          description: Signatures and escrowId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSignaturesResponse'
+        '400':
+          description: Validation error
+  /api/realEstate/complete-escrow:
+    post:
+      summary: Complete an escrow (finalize sale)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteEscrowRequest'
+      responses:
+        '200':
+          description: Escrow completed
+        '400':
+          description: Bad request
+        '500':
+          description: Failure
+  /api/blockchain/faucet:
+    get:
+      summary: Request faucet funds (local only)
+      parameters:
+      - in: query
+        name: address
+        required: true
+        schema:
+          $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: Faucet sent or topped up
+  /api/subscribe:
+    post:
+      summary: Subscribe an email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+      responses:
+        '200':
+          description: Subscribed
+  /api/contact:
+    post:
+      summary: Send contact email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactRequest'
+      responses:
+        '200':
+          description: Email sent
+  /api/analytics/documents:
+    get:
+      summary: Get all documents (admin/debug)
+      responses:
+        '200':
+          description: All collections dump
+components:
+  schemas:
+    Address:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{40}$
+      example: '0x0000000000000000000000000000000000000000'
+    HexString:
+      type: string
+      pattern: ^0x[a-fA-F0-9]*$
+    BigNumberLike:
+      oneOf:
+      - type: string
+      - type: number
+    FinanceDocument:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - CPAMM
+          - CSAMM
+          - OBMM
+        totalSwaps:
+          type: number
+        totalVolume:
+          type: number
+        totalFees:
+          type: number
+        totalCancelled:
+          type: number
+      required:
+      - type
+      - totalSwaps
+      - totalVolume
+      - totalFees
+    SupplyChainProvenance:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - Provenance
+        totalRecords:
+          type: number
+        completedRecords:
+          type: number
+        totalValueProcessed:
+          type: number
+      required:
+      - type
+      - totalRecords
+      - completedRecords
+      - totalValueProcessed
+    SupplyChainInventory:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - InventoryManagement
+        totalMovements:
+          type: number
+        totalOutbound:
+          type: number
+        totalReorders:
+          type: number
+      required:
+      - type
+      - totalMovements
+      - totalOutbound
+      - totalReorders
+    RealEstateDoc:
+      type: object
+      properties:
+        buyer:
+          $ref: '#/components/schemas/Address'
+        escrowId:
+          type: string
+      required:
+      - buyer
+      - escrowId
+    CreateSignaturesRequest:
+      type: object
+      properties:
+        buyer:
+          $ref: '#/components/schemas/Address'
+        seller:
+          $ref: '#/components/schemas/Address'
+        nftId:
+          type: integer
+        purchasePrice:
+          type: string
+          description: wei as string
+        nftAddress:
+          $ref: '#/components/schemas/Address'
+        nftCount:
+          type: integer
+          minimum: 1
+        earnestAmount:
+          type: string
+          description: wei as string
+        inspector:
+          $ref: '#/components/schemas/Address'
+        appraiser:
+          $ref: '#/components/schemas/Address'
+        lender:
+          $ref: '#/components/schemas/Address'
+          nullable: true
+          description: null or 0x0 for cash purchase
+      required:
+      - buyer
+      - seller
+      - nftId
+      - purchasePrice
+    CreateSignaturesResponse:
+      type: object
+      properties:
+        escrowId:
+          type: string
+        messageHash:
+          $ref: '#/components/schemas/HexString'
+        signatures:
+          type: object
+          properties:
+            buyer:
+              $ref: '#/components/schemas/HexString'
+            seller:
+              $ref: '#/components/schemas/HexString'
+            lender:
+              $ref: '#/components/schemas/HexString'
+    CompleteEscrowRequest:
+      type: object
+      properties:
+        escrowAddress:
+          $ref: '#/components/schemas/Address'
+      required:
+      - escrowAddress
+    SubscribeRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    ContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+      - name
+      - email
+      - subject
+      - message

@@ -1,18 +1,18 @@
 {
   "finance": {
-    "Eman Token 1": "0x16491D937996B261C8Ca887372C8af3040c4fb41",
-    "Eman Token 2": "0x1cdF3b421a54aBB7B174CFEC9561eF0F17b0E678",
-    "CPAMM": "0x1Ba3499E20109FF4db497B75eB24a82D78d06C5C",
-    "CSAMM": "0x5DE27D6Eaab8582cf611D0351Ad6d78413C8Dc74",
-    "OBMM": "0x71a2cf6A69345ADf274be09f3773d4c484C78aF0"
+    "Eman Token 1": "0x394E9790727A64DaFCC29AbbA8b00d20C970f757",
+    "Eman Token 2": "0xdf3b8AdF095e81B8262AFf84C3bE3e2085E21445",
+    "CPAMM": "0x7777c0e95EeAcF2850850b9b11a93dfa06C13bE2",
+    "CSAMM": "0xf3A7f029DA5f4AE4b28f00c6db9d2DB0FFc440c4",
+    "OBMM": "0x02bb74132Aa2bD036D70B9E5F22eE2C6ac6bb298"
   },
   "supplyChain": {
-    "provenanceAddress": "0x9Bb5128f24ac4165e37010D1773435EBA4842ED7",
-    "inventoryManagementAddress": "0x6cF2e7D0Bb517B766c50CB4c11b11a6930911237"
+    "provenanceAddress": "0x863b9d1F292add9455987e9A9f3e99d42c7Dac11",
+    "inventoryManagementAddress": "0xb03E3f4C9ddc8881227F3fAF9D2Ed69bcc0c5fFc"
   },
   "realEstate": {
-    "escrowFactoryAddress": "0xCe016F3ef98857f38921b7ec9F03C758A9ecd2A2",
-    "realEstateAddress": "0x039D709960a7EcADbaffe614C6650561dA5Ad44A",
-    "finance": "0xf1CE405F47eC27868a8f1E98AD7dAc8E11334C6e"
+    "escrowFactoryAddress": "0x7dCbED50b78fe12481613F92290B53F1Ab1c98af",
+    "realEstateAddress": "0xe3EED8dc2645B1D95dB9680a07B1430EA76A5DE6",
+    "finance": "0xb2ad1ed4876310e94cdAf3984e7Dae35d5C4f052"
   }
 }

@@ -1,2 +1,0 @@
-1. use typechain to create typescript bindings for the contract, no longer use hardhat (blockchain.services.ts)
-2. update package.json script 'dev' to have 'nodemon --exec ts-node src/index.ts'
